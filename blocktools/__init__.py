@@ -11,9 +11,9 @@ class BlockHeader:
         
     def __unicode__(self):
         return """Version:\t %d
-Previous Hash\t %s 
-Merkle Root\t %s" 
-Time\t\t %s" 
+Previous Hash\t %s
+Merkle Root\t %s
+Time\t\t %s
 Difficulty\t %8x
 Nonce\t\t %s""" % (
                     self.version, hashStr(self.previousHash), hashStr(self.merkleHash),
