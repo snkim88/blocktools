@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name='blocktools',
-    version='0.1.1',
+    version='0.1.2',
     author="Hendrik 'Bloody' Schumann, Alex Gorale",
     author_email='pypi@schumann.pw',
     packages=['blocktools'],

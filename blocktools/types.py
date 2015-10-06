@@ -16,6 +16,21 @@ def uint8(stream):
 def hash32(stream):
     return stream.read(32)[::-1]
 
+def pack_uint1(val):
+    return struct.pack('B', val)
+
+def pack_uint2(val):
+    return struct.pack('H', val)
+
+def pack_uint4(val):
+    return struct.pack('I', val)
+
+def pack_uint8(val):
+    return struct.pack('Q', val)
+
+def pack_hash32(val):
+    return val[::-1]
+
 def time(stream):
     time = uint4(stream)
     return time
@@ -32,6 +47,22 @@ def varint(stream):
     if size == 0xff:
         return uint8(stream)
     return -1
+    
+def pack_varint(val):
+
+    if val < 0xfd:
+        return struct.pack('B', val)
+        
+    if val < 0xffff:
+        return '\x02' + pack_uint2(val)
+        
+    if val < 0xffffffff:
+        return '\x04' + pack_uint4(val)
+        
+    if val < 0xffffffffffffffff:
+        return '\x08' + pack_uint8(val)
+        
+    raise AssertionError("VarInt is too large to store!")
 
 def hashStr(bytebuffer):
     return ''.join(('%x'%ord(a)) for a in bytebuffer)

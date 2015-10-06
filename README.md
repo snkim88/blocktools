@@ -25,7 +25,7 @@ or if installed:
 
 Alex Gorale, original author - https://github.com/tenthirtyone/blocktools
 
-Hendrik 'Bloody' Schumann, cleanup, pypi packaging
+Hendrik 'Bloody' Schumann, cleanup, pypi packaging, various improvements
 
 ## License
 

@@ -1,4 +1,5 @@
-from blocktools.types import * 
+from blocktools.types import *
+from hashlib import sha256
 
 class BlockHeader:
     def __init__(self, blockchain):
@@ -22,6 +23,16 @@ Nonce\t\t %s""" % (
                 
     def __str__(self):
         return self.__unicode__().encode('utf-8')
+        
+    def hash(self):
+        header_bin = pack_uint4(self.version) + \
+            pack_hash32(self.previousHash) + \
+            pack_hash32(self.merkleHash) + \
+            pack_uint4(self.time) + \
+            pack_uint4(self.bits) + \
+            pack_uint4(self.nonce)
+        
+        return sha256(sha256(header_bin).digest()).digest()[::-1].encode('hex')
 
 class Block:
     def __init__(self, blockchain):
