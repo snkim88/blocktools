@@ -4,12 +4,19 @@ from blocktools import Block, BlockHeader
 
 def parse(blockchain):
     print 'Parsing Block Chain'
+    continueParsing = True
     counter = 0
-    while True:
+    blockchain.seek(0, 2)
+    fSize = blockchain.tell() - 80 #Minus last Block header size for partial file
+    blockchain.seek(0, 0)
+    
+    while continueParsing:
         print counter
         try:
             block = Block(blockchain)
-            print str(block)
+            continueParsing = block.continueParsing
+            if continueParsing:
+                print str(block)
         except Exception as ex:
             print 'Error:', ex
             break

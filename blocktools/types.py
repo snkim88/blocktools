@@ -65,5 +65,5 @@ def pack_varint(val):
     raise AssertionError("VarInt is too large to store!")
 
 def hashStr(bytebuffer):
-    return ''.join(('%x'%ord(a)) for a in bytebuffer)
+    return ''.join(('%02x'%ord(a)) for a in bytebuffer)
 

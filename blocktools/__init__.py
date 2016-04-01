@@ -36,15 +36,48 @@ Nonce\t\t %s""" % (
 
 class Block:
     def __init__(self, blockchain):
-        self.magicNum = uint4(blockchain)
-        self.blocksize = uint4(blockchain)
-        self.setHeader(blockchain)
-        self.txCount = varint(blockchain)
+        self.continueParsing = True
+        self.magicNum = 0
+        self.blocksize = 0
+        self.blockheader = ''
+        self.txCount = 0
         self.Txs = []
 
-        for i in range(0, self.txCount):
-            tx = Tx(blockchain)
-            self.Txs.append(tx)
+        if self.hasLength(blockchain, 8):   
+            self.magicNum = uint4(blockchain)
+            self.blocksize = uint4(blockchain)
+        
+        if self.hasLength(blockchain, self.blocksize):
+            self.setHeader(blockchain)
+            self.txCount = varint(blockchain)
+            self.Txs = []
+
+            for i in range(0, self.txCount):
+                tx = Tx(blockchain)
+                self.Txs.append(tx)
+        else:
+            self.continueParsing = False
+            
+    def continueParsing(self):
+        return self.continueParsing
+
+    def getBlocksize(self):
+        if self.blocksize != '':
+            return self.blockdize
+        return 0
+
+    def hasLength(self, blockchain, size):
+        curPos = blockchain.tell()
+        blockchain.seek(0, 2)
+        
+        fileSize = blockchain.tell()
+        blockchain.seek(curPos)
+
+        tempBlockSize = fileSize - curPos
+        print tempBlockSize
+        if tempBlockSize < size:
+            return False
+        return True
 
     def setHeader(self, blockchain):
         self.blockHeader = BlockHeader(blockchain)
@@ -77,7 +110,7 @@ class Tx:
         if self.outCount > 0:
             for i in range(0, self.outCount):
                 output = txOutput(blockchain)
-                self.outputs.append(output)    
+                self.outputs.append(output)
         self.lockTime = uint4(blockchain)
         
     def __unicode__(self):
@@ -125,7 +158,7 @@ class txInput:
         return self.__unicode__().encode('utf-8')
         
 class txOutput:
-    def __init__(self, blockchain):    
+    def __init__(self, blockchain):
         self.value = uint8(blockchain)
         self.scriptLen = varint(blockchain)
         self.pubkey = blockchain.read(self.scriptLen)
