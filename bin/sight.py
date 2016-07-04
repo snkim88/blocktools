@@ -3,7 +3,7 @@ import sys
 from blocktools import Block, BlockHeader
 
 def parse(blockchain):
-    print 'Parsing Block Chain'
+    print('Parsing Block Chain')
     continueParsing = True
     counter = 0
     blockchain.seek(0, 2)
@@ -11,21 +11,21 @@ def parse(blockchain):
     blockchain.seek(0, 0)
     
     while continueParsing:
-        print counter
+        print(counter)
         try:
             block = Block(blockchain)
             continueParsing = block.continueParsing
             if continueParsing:
-                print str(block)
+                print((str(block)))
         except Exception as ex:
-            print 'Error:', ex
+            print(('Error:', ex))
             break
             
         counter+=1
 
 def main():
     if len(sys.argv) < 2:
-            print 'Usage: sight.py filename'
+            print('Usage: sight.py filename')
     else:
         with open(sys.argv[1], 'rb') as blockchain:
             parse(blockchain)

@@ -1,5 +1,6 @@
 from blocktools.types import *
 from hashlib import sha256
+import binascii
 
 class BlockHeader:
     def __init__(self, blockchain):
@@ -9,8 +10,8 @@ class BlockHeader:
         self.time = uint4(blockchain)
         self.bits = uint4(blockchain)
         self.nonce = uint4(blockchain)
-        
-    def __unicode__(self):
+
+    def __str__(self):
         return """Version:\t %d
 Previous Hash\t %s
 Merkle Root\t %s
@@ -20,10 +21,8 @@ Nonce\t\t %s""" % (
                     self.version, hashStr(self.previousHash), hashStr(self.merkleHash),
                     str(self.time), self.bits, self.nonce
                 )
-                
-    def __str__(self):
-        return self.__unicode__().encode('utf-8')
-        
+
+
     def hash(self):
         header_bin = pack_uint4(self.version) + \
             pack_hash32(self.previousHash) + \
@@ -31,8 +30,8 @@ Nonce\t\t %s""" % (
             pack_uint4(self.time) + \
             pack_uint4(self.bits) + \
             pack_uint4(self.nonce)
-        
-        return sha256(sha256(header_bin).digest()).digest()[::-1].encode('hex')
+
+        return binascii.hexlify(sha256(sha256(header_bin).digest()).digest()[::-1])
 
 class Block:
     def __init__(self, blockchain):
@@ -43,10 +42,10 @@ class Block:
         self.txCount = 0
         self.Txs = []
 
-        if self.hasLength(blockchain, 8):   
+        if self.hasLength(blockchain, 8):
             self.magicNum = uint4(blockchain)
             self.blocksize = uint4(blockchain)
-        
+
         if self.hasLength(blockchain, self.blocksize):
             self.setHeader(blockchain)
             self.txCount = varint(blockchain)
@@ -57,7 +56,7 @@ class Block:
                 self.Txs.append(tx)
         else:
             self.continueParsing = False
-            
+
     def continueParsing(self):
         return self.continueParsing
 
@@ -69,20 +68,20 @@ class Block:
     def hasLength(self, blockchain, size):
         curPos = blockchain.tell()
         blockchain.seek(0, 2)
-        
+
         fileSize = blockchain.tell()
         blockchain.seek(curPos)
 
         tempBlockSize = fileSize - curPos
-        print tempBlockSize
+        #print(tempBlockSize)
         if tempBlockSize < size:
             return False
         return True
 
     def setHeader(self, blockchain):
         self.blockHeader = BlockHeader(blockchain)
-        
-    def __unicode__(self):
+
+    def __str__(self):
             return """Magic No: \t%8x
 Blocksize: \t%d
 ########## Block Header ##########
@@ -93,9 +92,6 @@ Blocksize: \t%d
                 self.magicNum, self.blocksize, str(self.blockHeader), self.txCount,
                 '\n'.join([str(tx) for tx in self.Txs])
             )
-            
-    def __str__(self):
-        return self.__unicode__().encode('utf-8')
 
 class Tx:
     def __init__(self, blockchain):
@@ -112,8 +108,8 @@ class Tx:
                 output = txOutput(blockchain)
                 self.outputs.append(output)
         self.lockTime = uint4(blockchain)
-        
-    def __unicode__(self):
+
+    def __str__(self):
         return """========== New Transaction ==========
 Tx Version: \t%d
 Inputs: \t%d
@@ -127,10 +123,7 @@ Lock Time: \t%d
             self.outCount, '\n'.join([str(o) for o in self.outputs]),
             self.lockTime
         )
-            
-    def __str__(self):
-        return self.__unicode__().encode('utf-8')
-                
+
 
 class txInput:
     def __init__(self, blockchain):
@@ -139,8 +132,8 @@ class txInput:
         self.scriptLen = varint(blockchain)
         self.scriptSig = blockchain.read(self.scriptLen)
         self.seqNo = uint4(blockchain)
-        
-    def __unicode__(self):
+
+    def __str__(self):
         return """< Previous Hash: \t%s
 < Tx Out Index: \t%8x
 < Script Length: \t%d
@@ -153,17 +146,15 @@ class txInput:
             hashStr(self.scriptSig),
             self.seqNo
         )
-            
-    def __str__(self):
-        return self.__unicode__().encode('utf-8')
-        
+
+
 class txOutput:
     def __init__(self, blockchain):
         self.value = uint8(blockchain)
         self.scriptLen = varint(blockchain)
         self.pubkey = blockchain.read(self.scriptLen)
-        
-    def __unicode__(self):
+
+    def __str__(self):
         return """> Value: \t%d
 > Script Len: \t%d
 > Pubkey: \t%s
@@ -172,6 +163,3 @@ class txOutput:
             self.scriptLen,
             hashStr(self.pubkey)
         )
-            
-    def __str__(self):
-        return self.__unicode__().encode('utf-8')

@@ -1,4 +1,4 @@
-import struct
+import struct, binascii
 
 
 def uint1(stream):
@@ -47,23 +47,23 @@ def varint(stream):
     if size == 0xff:
         return uint8(stream)
     return -1
-    
+
 def pack_varint(val):
 
     if val < 0xfd:
         return struct.pack('B', val)
-        
+
     if val < 0xffff:
         return '\x02' + pack_uint2(val)
-        
+
     if val < 0xffffffff:
         return '\x04' + pack_uint4(val)
-        
+
     if val < 0xffffffffffffffff:
         return '\x08' + pack_uint8(val)
-        
+
     raise AssertionError("VarInt is too large to store!")
 
 def hashStr(bytebuffer):
-    return ''.join(('%02x'%ord(a)) for a in bytebuffer)
+    return binascii.hexlify(bytebuffer)
 
