@@ -54,16 +54,15 @@ def pack_varint(val):
         return struct.pack('B', val)
 
     if val < 0xffff:
-        return '\x02' + pack_uint2(val)
+        return b'\x02' + pack_uint2(val)
 
     if val < 0xffffffff:
-        return '\x04' + pack_uint4(val)
+        return b'\x04' + pack_uint4(val)
 
     if val < 0xffffffffffffffff:
-        return '\x08' + pack_uint8(val)
+        return b'\x08' + pack_uint8(val)
 
     raise AssertionError("VarInt is too large to store!")
 
 def hashStr(bytebuffer):
     return binascii.hexlify(bytebuffer)
-
