@@ -50,7 +50,7 @@ class Block:
             self.blocksize = uint4(blockchain)
         else:
             self.continueParsing = False
-			return
+            return
 
         if self.hasLength(blockchain, self.blocksize):
             self.setHeader(blockchain)
